@@ -5,6 +5,15 @@ metadata:
   name: linode-cli
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: daemon-hostkey
+  namespace: linode-cli
+type: Opaque
+stringData:
+  privkey: YOURPRIVKEYHERE
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: daemon-account
@@ -16,7 +25,7 @@ metadata:
   name: linode-cli-daemon-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "namespaces", "pods/attach"]
+    resources: ["pods", "namespaces", "pods/attach", "secrets"]
     verbs: ["get", "list", "create", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -54,8 +63,19 @@ spec:
         - name: daemon
           image: lbgarber/cli-autodeploy-daemon:latest
           imagePullPolicy: Always
+          env:
+            - name: CLI_HOST_KEY
+              value: "/etc/hostkey-volume/privkey"
           ports:
             - containerPort: 2222
+          volumeMounts:
+            - mountPath: "/etc/hostkey-volume"
+              readOnly: true
+              name: hostkey
+      volumes:
+        - name: hostkey
+          secret:
+            secretName: daemon-hostkey
 ---
 apiVersion: v1
 kind: Service
