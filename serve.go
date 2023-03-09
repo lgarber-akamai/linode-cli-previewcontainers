@@ -5,12 +5,13 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
+	"linode-cli-autodeploy/appcontext"
 	"log"
 	"strconv"
 	"strings"
 )
 
-func getSSHHandler(appContext *AppContext) ssh.Handler {
+func getSSHHandler(appContext *appcontext.AppContext) ssh.Handler {
 	return func(s ssh.Session) {
 		remoteAddressSegments := strings.Split(s.RemoteAddr().String(), ":")
 		remoteAddress := strings.Join(remoteAddressSegments[:len(remoteAddressSegments)-1], ":")
@@ -38,6 +39,14 @@ func getSSHHandler(appContext *AppContext) ssh.Handler {
 			return
 		}
 
+		term.Write([]byte("Linode API Token:\n"))
+
+		token, err := term.ReadLine()
+		if err != nil {
+			log.Printf("[WARN] failed to read linode token: %s\n", err)
+			return
+		}
+
 		canProvision, err := appContext.CanOriginProvisionRunner(remoteAddress)
 		if err != nil {
 			log.Printf("[WARN] Failed to check pods for user rate-limit: %s", err)
@@ -47,14 +56,19 @@ func getSSHHandler(appContext *AppContext) ssh.Handler {
 		if !canProvision {
 			s.Write([]byte(
 				fmt.Sprintf("You have exceeded the rate limit of %d concurrent sessions. "+
-					"Please wait for existing sessions to clean up.\n", appContext.maxConcurrentRunners)))
+					"Please wait for existing sessions to clean up.\n", appContext.MaxConcurrentRunners)))
 			return
 		}
 
 		term.Write([]byte("Provisioning CLI environment...\n"))
 
 		// Create a runner instance
-		runner, err := appContext.ProvisionRunner(*pr.Head.Repo.CloneURL, *pr.Head.Ref, remoteAddress)
+		runner, err := appContext.ProvisionRunner(appcontext.ProvisionRunnerOptions{
+			RepoCloneURL: *pr.Head.Repo.CloneURL,
+			RepoBranch:   *pr.Head.Ref,
+			Origin:       remoteAddress,
+			Token:        token,
+		})
 		if err != nil {
 			log.Printf("[WARN] failed to provision runner: %s\n", err)
 			term.Write([]byte("Failed to provision CLI environment :(\n"))
@@ -83,7 +97,7 @@ func serve(context *cli.Context) error {
 
 	log.Println("[INFO] Creating app context")
 
-	appContext, err := NewAppContext(AppContextOptions{
+	appContext, err := appcontext.NewAppContext(appcontext.AppContextOptions{
 		KubeConfig:           context.String("kubeconfig"),
 		UseKubeConfig:        context.Bool("use-kubeconfig"),
 		Namespace:            context.String("runner-namespace"),

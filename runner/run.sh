@@ -6,8 +6,4 @@ cd /linode-cli && make install
 
 cd ~ && rm -rf /scripts /linode-cli
 
-printf "Linode API Token:\n> "
-
-read INPUT_TOKEN
-
-LINODE_CLI_TOKEN=$INPUT_TOKEN ash
+ash
