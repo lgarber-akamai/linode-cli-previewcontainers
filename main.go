@@ -10,9 +10,14 @@ import (
 )
 
 func main() {
-	home := homedir.HomeDir()
-	if home != "" {
-		home = filepath.Join(home, ".kube", "config")
+	kubeConfigDir := homedir.HomeDir()
+	if kubeConfigDir != "" {
+		kubeConfigDir = filepath.Join(kubeConfigDir, ".kube", "config")
+	}
+
+	hostKeyDir := homedir.HomeDir()
+	if hostKeyDir != "" {
+		hostKeyDir = filepath.Join(hostKeyDir, ".ssh", "id_rsa")
 	}
 
 	cliApp := &cli.App{
@@ -23,10 +28,11 @@ func main() {
 				Name:  "runner-namespace",
 				Usage: "The Kubernetes namespace to use for runner pods.",
 				Value: "linode-cli-runner",
+				EnvVars: []string{"CLI_RUNNER_NAMESPACE"},
 			},
 			&cli.StringFlag{
 				Name:      "kubeconfig",
-				Value:     home,
+				Value:     kubeConfigDir,
 				EnvVars:   []string{"KUBECONFIG"},
 				TakesFile: true,
 			},
@@ -37,6 +43,12 @@ func main() {
 				Name:  "max-concurrent-runners",
 				Usage: "The maxiumum number of runners a user can have at a time.",
 				Value: 3,
+			},
+			&cli.StringFlag{
+				Name: "ssh-hostkey",
+				Usage: "The host key to use for the simulated SSH server.",
+				Value: hostKeyDir,
+				EnvVars: []string{"CLI_HOST_KEY"},
 			},
 		},
 		Commands: []*cli.Command{

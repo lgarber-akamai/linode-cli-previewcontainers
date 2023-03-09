@@ -115,5 +115,9 @@ func serve(context *cli.Context) error {
 	go appContext.RunnerCleanupCron()
 
 	log.Printf("[INFO] Listening on port 2222")
-	return ssh.ListenAndServe(":2222", getSSHHandler(appContext))
+
+	return ssh.ListenAndServe(
+		":2222",
+		getSSHHandler(appContext),
+		ssh.HostKeyFile(context.String("ssh-hostkey")))
 }
