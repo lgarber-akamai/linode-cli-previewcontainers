@@ -30,3 +30,15 @@ GLOBAL OPTIONS:
    --runner-expiry-time value      The time (in minutes) until a runner session should automatically be destroyed (default: 15) [$CLI_RUNNER_EXPIRY_TIME]
    --help, -h                      show help
 ```
+
+## Deploying to a Cluster
+
+This repository includes a helm chart for deploying the daemon to a cluster. 
+
+1. Configure the deployment using the configuration options in `helm/linode-cli-previewcontiners/values.yaml`.
+
+2. Install the Helm chart on a cluster
+
+```bash
+helm install linode-cli-previewcontainers ./helm/linode-cli-previewcontainers
+```
