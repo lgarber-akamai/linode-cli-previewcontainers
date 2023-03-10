@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daemon-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: daemon
+spec:
+  selector:
+    matchLabels:
+      app: daemon
+  template:
+    metadata:
+      labels:
+        app: daemon
+    spec:
+      serviceAccountName: daemon-account
+      containers:
+        - name: daemon
+          image: {{ .Values.daemonImage.image }}:{{ .Values.daemonImage.tag }}
+          imagePullPolicy: {{ .Values.daemonImage.pullPolicy }}
+          env:
+            - name: CLI_HOST_KEY
+              value: "/etc/hostkey-volume/privkey"
+            - name: CLI_SSH_PORT
+              value: "{{ .Values.sshListenPort }}"
+            - name: CLI_RUNNER_IMAGE
+              value: "{{ .Values.runnerImage }}"
+            - name: CLI_MAX_CONCURRENT_RUNNERS
+              value: "{{ .Values.maxConcurrentRunners }}"
+            - name: CLI_RUNNER_MEMORY_LIMIT
+              value: "{{ .Values.runnerMemoryLimit }}"
+            - name: CLI_RUNNER_CPU_LIMIT
+              value: "{{ .Values.runnerCPULimit }}"
+            - name: CLI_RUNNER_EXPIRY_TIME
+              value: "{{ .Values.runnerExpiryMinutes }}"
+          ports:
+            - containerPort: 2222
+          volumeMounts:
+            - mountPath: "/etc/hostkey-volume"
+              readOnly: true
+              name: hostkey
+      volumes:
+        - name: hostkey
+          secret:
+            secretName: daemon-hostkey

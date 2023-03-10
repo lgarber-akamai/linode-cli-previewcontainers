@@ -1,0 +1,21 @@
+namespace: linode-cli
+
+# Required; the public IP of a node to expose the SSH server on
+exposeIP: 0.0.0.0
+
+# Required; the SSH private key contents to use as the SSH server host key
+hostPrivateKey: |
+  myprivkey
+
+runnerNamespace: linode-cli-runner
+runnerMemoryLimit: 1G
+runnerCPULimit: 1.0
+runnerExpiryMinutes: 15123
+runnerImage: lbgarber/cli-previewcontainers-runner:latest
+maxConcurrentRunners: 3
+sshListenPort: 2222
+
+daemonImage:
+  image: lbgarber/cli-previewcontainers-daemon
+  tag: latest
+  pullPolicy: Always
