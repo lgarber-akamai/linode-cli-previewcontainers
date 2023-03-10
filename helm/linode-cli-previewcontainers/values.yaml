@@ -5,12 +5,12 @@ exposeIP: 0.0.0.0
 
 # Required; the SSH private key contents to use as the SSH server host key
 hostPrivateKey: |
-  myprivkey
+  yoursshprivatekey
 
 runnerNamespace: linode-cli-runner
 runnerMemoryLimit: 1G
 runnerCPULimit: 1.0
-runnerExpiryMinutes: 15123
+runnerExpiryMinutes: 10
 runnerImage: lbgarber/cli-previewcontainers-runner:latest
 maxConcurrentRunners: 3
 sshListenPort: 2222
