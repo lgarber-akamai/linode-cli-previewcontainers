@@ -71,6 +71,7 @@ func NewAppContext(config AppContextOptions) (*AppContext, error) {
 		runnerImage:          config.RunnerImage,
 		runnerCPULimit:       config.RunnerCPULimit,
 		runnerMemoryLimit:    config.RunnerMemoryLimit,
+		runnerExpiryTime:     config.RunnerExpiryTime,
 	}, nil
 }
 
