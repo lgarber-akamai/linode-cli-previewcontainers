@@ -34,6 +34,7 @@ func main() {
 				Name:  "runner-image",
 				Value: "lbgarber/cli-previewcontainers-runner:latest",
 				Usage: "The image to deploy on runner pods.",
+				EnvVars: []string{"CLI_RUNNER_IMAGE"},
 			},
 			&cli.StringFlag{
 				Name:      "kubeconfig",
@@ -48,6 +49,7 @@ func main() {
 				Name:  "max-concurrent-runners",
 				Usage: "The maxiumum number of runners a user can have at a time.",
 				Value: 3,
+				EnvVars: []string{"CLI_MAX_CONCURRENT_RUNNERS"},
 			},
 			&cli.StringFlag{
 				Name:    "ssh-hostkey",
@@ -59,21 +61,25 @@ func main() {
 				Name:  "runner-memory-limit",
 				Usage: "The memory limit for runner containers.",
 				Value: "512M",
+				EnvVars: []string{"CLI_RUNNER_MEMORY_LIMIT"},
 			},
 			&cli.StringFlag{
 				Name:  "runner-cpu-limit",
 				Usage: "The CPU limit for runner containers.",
 				Value: "0.6",
+				EnvVars: []string{"CLI_RUNNER_CPU_LIMIT"},
 			},
 			&cli.IntFlag{
 				Name:  "ssh-listen-port",
 				Usage: "The port for the simulated SSH server to listen on",
 				Value: 2222,
+				EnvVars: []string{"CLI_SSH_PORT"},
 			},
 			&cli.IntFlag{
 				Name:  "runner-expiry-time",
 				Usage: "The time (in minutes) until a runner session should automatically be destroyed",
 				Value: 15,
+				EnvVars: []string{"CLI_RUNNER_EXPIRY_TIME"},
 			},
 		},
 		Commands: []*cli.Command{
