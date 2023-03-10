@@ -17,6 +17,7 @@ type AppContextOptions struct {
 	RunnerImage          string
 	RunnerMemoryLimit    string
 	RunnerCPULimit       string
+	RunnerExpiryTime     int
 	MaxConcurrentRunners int
 	UseKubeConfig        bool
 }
@@ -28,6 +29,7 @@ type AppContext struct {
 	runnerImage       string
 	runnerMemoryLimit string
 	runnerCPULimit    string
+	runnerExpiryTime  int
 
 	MaxConcurrentRunners int
 }

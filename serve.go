@@ -102,6 +102,7 @@ func serve(context *cli.Context) error {
 		UseKubeConfig:        context.Bool("use-kubeconfig"),
 		Namespace:            context.String("runner-namespace"),
 		MaxConcurrentRunners: context.Int("max-concurrent-runners"),
+		RunnerExpiryTime:     context.Int("runner-expiry-time"),
 		RunnerImage:          context.String("runner-image"),
 		RunnerCPULimit:       context.String("runner-cpu-limit"),
 		RunnerMemoryLimit:    context.String("runner-memory-limit"),

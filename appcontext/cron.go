@@ -151,7 +151,7 @@ func (c *AppContext) aggregateRunners() ([]*RunnerInstance, error) {
 }
 
 func (c *AppContext) shouldRemovePod(pod *corev1.Pod) bool {
-	return time.Since(pod.CreationTimestamp.Time).Minutes() >= 15 ||
+	return time.Since(pod.CreationTimestamp.Time).Minutes() >= float64(c.runnerExpiryTime) ||
 		pod.Status.Phase == corev1.PodFailed ||
 		pod.Status.Phase == corev1.PodSucceeded
 }

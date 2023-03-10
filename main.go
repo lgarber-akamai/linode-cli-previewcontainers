@@ -70,6 +70,11 @@ func main() {
 				Usage: "The port for the simulated SSH server to listen on",
 				Value: 2222,
 			},
+			&cli.IntFlag{
+				Name:  "runner-expiry-time",
+				Usage: "The time (in minutes) until a runner session should automatically be destroyed",
+				Value: 15,
+			},
 		},
 		Commands: []*cli.Command{
 			{
