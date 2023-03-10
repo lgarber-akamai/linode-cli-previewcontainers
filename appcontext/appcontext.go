@@ -13,19 +13,24 @@ import (
 
 type AppContextOptions struct {
 	KubeConfig           string
-	UseKubeConfig        bool
 	Namespace            string
+	RunnerImage          string
+	RunnerMemoryLimit    string
+	RunnerCPULimit       string
 	MaxConcurrentRunners int
+	UseKubeConfig        bool
 }
 
 type AppContext struct {
-	clientSet            *kubernetes.Clientset
-	kubeConfig           *rest.Config
-	namespace            string
+	clientSet         *kubernetes.Clientset
+	kubeConfig        *rest.Config
+	namespace         string
+	runnerImage       string
+	runnerMemoryLimit string
+	runnerCPULimit    string
 
 	MaxConcurrentRunners int
 }
-
 
 func NewAppContext(config AppContextOptions) (*AppContext, error) {
 	var kubeConfig *rest.Config
@@ -61,6 +66,9 @@ func NewAppContext(config AppContextOptions) (*AppContext, error) {
 		kubeConfig:           kubeConfig,
 		namespace:            config.Namespace,
 		MaxConcurrentRunners: config.MaxConcurrentRunners,
+		runnerImage:          config.RunnerImage,
+		runnerCPULimit:       config.RunnerCPULimit,
+		runnerMemoryLimit:    config.RunnerMemoryLimit,
 	}, nil
 }
 

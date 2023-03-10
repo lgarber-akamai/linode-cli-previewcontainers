@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gliderlabs/ssh"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/rand"
 	"k8s.io/client-go/tools/remotecommand"
@@ -16,18 +17,16 @@ const LabelRunnerType = "linode-cli-autodeploy.type"
 const LabelRunnerOrigin = "linode-cli-autodeploy.origin"
 
 type RunnerInstance struct {
-	ID string
-	Pod *corev1.Pod
+	ID     string
+	Pod    *corev1.Pod
 	Secret *corev1.Secret
 }
 
-
-
 type ProvisionRunnerOptions struct {
 	RepoCloneURL string
-	RepoBranch string
-	Origin string
-	Token string
+	RepoBranch   string
+	Origin       string
+	Token        string
 }
 
 func (c *AppContext) ProvisionRunner(opts ProvisionRunnerOptions) (*RunnerInstance, error) {
@@ -55,7 +54,13 @@ func (c *AppContext) ProvisionRunner(opts ProvisionRunnerOptions) (*RunnerInstan
 			Containers: []corev1.Container{
 				{
 					Name:  "runner",
-					Image: "lbgarber/cli-autodeploy-runner:latest",
+					Image: c.runnerImage,
+					Resources: corev1.ResourceRequirements{
+						Limits: corev1.ResourceList{
+							"cpu":    resource.MustParse(c.runnerCPULimit),
+							"memory": resource.MustParse(c.runnerMemoryLimit),
+						},
+					},
 					Env: []corev1.EnvVar{
 						{
 							Name:  "GIT_REPO_URL",
@@ -96,8 +101,8 @@ func (c *AppContext) ProvisionRunner(opts ProvisionRunnerOptions) (*RunnerInstan
 	}
 
 	return &RunnerInstance{
-		ID: runnerID,
-		Pod: result,
+		ID:     runnerID,
+		Pod:    result,
 		Secret: runnerSecrets,
 	}, nil
 }
@@ -160,7 +165,7 @@ func (c *AppContext) createSecretsForRunner(runnerID, token string) (*corev1.Sec
 				LabelRunnerType: "runner-creds",
 			},
 		},
-		Immutable:  &immutable,
+		Immutable: &immutable,
 		StringData: map[string]string{
 			"linode-api-token": token,
 		},
@@ -180,7 +185,7 @@ func (c *AppContext) getRunnerByID(runnerID string) (*RunnerInstance, error) {
 	var pod *corev1.Pod
 
 	listOpts := metav1.ListOptions{
-		LabelSelector:        fmt.Sprintf("%s=%s", LabelRunnerID, runnerID),
+		LabelSelector: fmt.Sprintf("%s=%s", LabelRunnerID, runnerID),
 	}
 
 	pods, err := c.clientSet.CoreV1().Pods(c.namespace).List(
@@ -204,7 +209,7 @@ func (c *AppContext) getRunnerByID(runnerID string) (*RunnerInstance, error) {
 	}
 
 	return &RunnerInstance{
-		ID: runnerID,
+		ID:     runnerID,
 		Pod:    pod,
 		Secret: secret,
 	}, nil

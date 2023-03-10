@@ -15,6 +15,6 @@ FROM alpine:3.17
 
 WORKDIR /app
 
-COPY --from=builder /app/linode-cli-autodeploy .
+COPY --from=builder /app/linode-cli-previewcontainers .
 
-CMD ["/app/linode-cli-autodeploy", "serve"]
+CMD ["/app/linode-cli-previewcontainers", "serve"]

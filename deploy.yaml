@@ -61,7 +61,7 @@ spec:
       serviceAccountName: daemon-account
       containers:
         - name: daemon
-          image: lbgarber/cli-autodeploy-daemon:latest
+          image: lbgarber/cli-previewcontainers-daemon:latest
           imagePullPolicy: Always
           env:
             - name: CLI_HOST_KEY

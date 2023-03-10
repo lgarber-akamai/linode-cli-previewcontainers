@@ -99,6 +99,7 @@ func (c *AppContext) cleanupOrphans() error {
 	return nil
 }
 
+// This is terrible; I should really aggregate runner IDs instead of dynamically resolving them from labels
 func (c *AppContext) aggregateRunners() ([]*RunnerInstance, error) {
 	aggregatedIDs := make(map[string]bool)
 

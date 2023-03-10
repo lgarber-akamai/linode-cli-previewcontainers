@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/gliderlabs/ssh"
+	"github.com/lgarber-akamai/linode-cli-previewcontainers/appcontext"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
-	"linode-cli-autodeploy/appcontext"
 	"log"
 	"strconv"
 	"strings"
@@ -102,6 +102,9 @@ func serve(context *cli.Context) error {
 		UseKubeConfig:        context.Bool("use-kubeconfig"),
 		Namespace:            context.String("runner-namespace"),
 		MaxConcurrentRunners: context.Int("max-concurrent-runners"),
+		RunnerImage:          context.String("runner-image"),
+		RunnerCPULimit:       context.String("runner-cpu-limit"),
+		RunnerMemoryLimit:    context.String("runner-memory-limit"),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create app context: %s", err)
@@ -114,10 +117,12 @@ func serve(context *cli.Context) error {
 
 	go appContext.RunnerCleanupCron()
 
-	log.Printf("[INFO] Listening on port 2222")
+	listenPort := context.Int("ssh-listen-port")
+
+	log.Printf("[INFO] Listening on port %d\n", listenPort)
 
 	return ssh.ListenAndServe(
-		":2222",
+		fmt.Sprintf(":%d", listenPort),
 		getSSHHandler(appContext),
 		ssh.HostKeyFile(context.String("ssh-hostkey")))
 }

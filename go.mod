@@ -1,4 +1,4 @@
-module linode-cli-autodeploy
+module github.com/lgarber-akamai/linode-cli-previewcontainers
 
 go 1.19
 
